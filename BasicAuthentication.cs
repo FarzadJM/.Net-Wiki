@@ -33,7 +33,7 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
 
             if (credentials.ElementAt(0) == "username" && credentials.ElementAt(1) == "password")
             {
-                var claims = new[] { new Claim(ClaimTypes.Name, "farzad"), new Claim(ClaimTypes.Role, "admin") };
+                var claims = new[] { new Claim(ClaimTypes.Name, credentials.ElementAt(0)), new Claim(ClaimTypes.Role, "admin") };
                 var identity = new ClaimsIdentity(claims, "Basic");
                 var principal = new ClaimsPrincipal(identity);
                 var authenticationScheme = Scheme.Name;

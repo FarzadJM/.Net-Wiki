@@ -18,13 +18,14 @@ app.Run();
 
 public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOptions>
 {
+    [Obsolete]
     public BasicAuthentication(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
     {
     }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (Context.Request.Headers.Authorization.FirstOrDefault(x => x.ToLower().StartsWith("basic")) is string authStr)
+        if (Context.Request.Headers.Authorization.FirstOrDefault(x => x is not null && x.StartsWith("basic", StringComparison.CurrentCultureIgnoreCase)) is string authStr)
         {
             var token = authStr.Substring("basic ".Length).Trim();
             var credentialStr = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(token));
@@ -41,7 +42,7 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
             }
         }
 
-        Response.Headers.Add("WWW-Authenticate", "Basic");
+        Response.Headers.Append("WWW-Authenticate", "Basic");
         return Task.FromResult(AuthenticateResult.Fail("Unauthorized access"));
     }
 }
